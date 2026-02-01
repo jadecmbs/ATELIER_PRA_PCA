@@ -1,23 +1,16 @@
 ------------------------------------------------------------------------------------------------------
-ATELIER STREAMING ADAPTATIF
+ATELIER API-DRIVEN INFRASTRUCTURE
 ------------------------------------------------------------------------------------------------------
-L’idée en 30 secondes : Dans le cadre du streaming d'une vidéo, au lieu d’envoyer un seul flux vidéo à débit fixe, on prépare plusieurs versions (renditions) de la même vidéo — par exemple 1080p, 720p, 480p, chacune à différents bitrates — puis on découpe la vidéo en petits segments (2–6 s).
-Le player (navigateur, app mobile, Unity/ExoPlayer…) mesure en continu la bande passante et l’état du buffer, et change de version à la volée segment après segment pour éviter les coupures et s’adapter au réseau de l’utilisateur.
+L’idée en 30 secondes : **Orchestration de services AWS via API Gateway et Lambda dans un environnement émulé**.  
+Cet atelier propose de concevoir une architecture **API-driven** dans laquelle une requête HTTP déclenche, via **API Gateway** et une **fonction Lambda**, des actions d’infrastructure sur des **instances EC2**, le tout dans un **environnement AWS simulé avec LocalStack** et exécuté dans **GitHub Codespaces**. L’objectif est de comprendre comment des services cloud serverless peuvent piloter dynamiquement des ressources d’infrastructure, indépendamment de toute console graphique.Cet atelier propose de concevoir une architecture API-driven dans laquelle une requête HTTP déclenche, via API Gateway et une fonction Lambda, des actions d’infrastructure sur des instances EC2, le tout dans un environnement AWS simulé avec LocalStack et exécuté dans GitHub Codespaces. L’objectif est de comprendre comment des services cloud serverless peuvent piloter dynamiquement des ressources d’infrastructure, indépendamment de toute console graphique.
   
 -------------------------------------------------------------------------------------------------------
-Séquence 1 : Le Laboratoire
+Séquence 1 : Codespace de Github
 -------------------------------------------------------------------------------------------------------
-Objectif : Création d'une instance dans un laboratoire numérique  
+Objectif : Création d'un Codespace Github  
 Difficulté : Très facile (~5 minutes)
 -------------------------------------------------------------------------------------------------------
-RDV sur le laboratoire numérique : <a href="http://lab-boris.fr" target="_blank">Laboratoire</a> **(click droit ouvrir dans un nouvel onglet)** puis créer une instance **+ ADD NEW INSTANCE**
-
-**Astuce pour coller du code dans votre instance du laboratoire**  
-Vous aurez à coller du code dans votre instance. Toutefois la combinaison de touche Ctrl+V ne fonctionne pas dans le navigateur.  
-La combinaison de touche pour coller du code dans votre instance sera en fonction de votre navigateur.  
-- Coller dans Chrome -> Ctrl+Shift+v
-- Coller dans Firefox ->  Shift+Insert
-- Coller dans EI et Safari -> Ctrl+v
+RDV sur Codespace de Github : <a href="https://github.com/features/codespaces" target="_blank">Codespace</a> **(click droit ouvrir dans un nouvel onglet)** puis connecter votre Codespace à votre Repository API-Driven.
   
 ---------------------------------------------------
 Séquence 2 : Création de votre serveur de Streaming
