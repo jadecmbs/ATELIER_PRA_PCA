@@ -231,27 +231,28 @@ Faites preuve de pédagogie et soyez clair dans vos explications et procedures d
 **Exercice 1 :**  
 Quels sont les composants dont la perte entraîne une perte de données ?  
   
-*..Répondez à cet exercice ici..*
+*Le PVC pra-data car il contient le volume persistant qui contient lui même le fichier de base de données. Le PVC pra-backup car il contient les sauvegardes automatiques. Le stockage physique du node car les PVC sont stockés localement sur le node Docker.*
 
 **Exercice 2 :**  
-Expliquez nous pourquoi nous n'avons pas perdu les données lors de la supression du PVC pra-data  
+Expliquez nous pourquoi nous n'avons pas perdu les données lors de la supression du PVC pra-data 
   
-*..Répondez à cet exercice ici..*
+*Car le pod est éphémère et que les données qu'il contient sont stocké dans PVC pra-data.
+Donc quand on créé un pod, il va cherche les données du PVC et donc le fichier SQLite*
 
 **Exercice 3 :**  
 Quels sont les RTO et RPO de cette solution ?  
   
-*..Répondez à cet exercice ici..*
+*Les RTO sont CronJob (sauvegarde toutes les minutes vers pra-backup). Dans le cas d'un scénario PRA il y a la recréation du PVC, sont redéployement puis le lancement de la restauration (environ 3 à 5 minutes). Le redémarrage n'est pas automatique*
 
 **Exercice 4 :**  
 Pourquoi cette solution (cet atelier) ne peux pas être utilisé dans un vrai environnement de production ? Que manque-t-il ?   
   
-*..Répondez à cet exercice ici..*
+*Car c'est une infra local non répliquée donc si la machine hôte du cluster K3d est perdue, toutes les doénnées ainsi que les sauvegardes sont perdues. De plus, SQLite n'est pas adaptée pour la prod (base de donnée embarquée, non distributive). Il n'y a pas non plus de réplication intersite ni de sauvgearde externalisée (indispensable pour une vrai reprise après sinitre). Pour finir la procédure de restauration est manuelle.*
   
 **Exercice 5 :**  
 Proposez une archtecture plus robuste.   
   
-*..Répondez à cet exercice ici..*
+*On pourrait commencer par avoir un cluster Kubernetes haute disponibilité composé de plusieurs nœuds maîtres et workers répartis sur différentes zones pour éviter tout point unique de défaillance. En suite le stockage ne serait plus local mais distribué et répliqué, par exemple via une solution comme Longhorn ou Ceph, qui garantit la persistance des données même en cas de perte d’un nœud. La base de données SQLite pourrait être remplacée par un moteur adapté à la production comme PostgreSQL déployé en cluster ou consommé sous forme de service managé, avec réplication native et sauvegardes automatiques. De plus les sauvegardes seraient externalisées vers un stockage objet distant afin de les isoler de l’infrastructure principale et de se protéger contre la perte complète du site. Enfin, le plan de reprise après sinistre pourrait être automatisé, avec des procédures de restauration testées régulièrement, afin de réduire le RTO et de garantir un niveau de fiabilité conforme aux exigences d’un environnement de production réel.*
 
 ---------------------------------------------------
 Séquence 6 : Ateliers  
@@ -263,11 +264,12 @@ Difficulté : Moyenne (~2 heures)
 * last_backup_file : nom du dernier backup présent dans /backup
 * backup_age_seconds : âge du dernier backup
 
-*..**Déposez ici une copie d'écran** de votre réussite..*
+*<img width="837" height="196" alt="image" src="https://github.com/user-attachments/assets/0c372a83-f785-4ebf-8065-90646a784a09" />
+*
 
 ---------------------------------------------------
 ### **Atelier 2 : Choisir notre point de restauration**  
-Aujourd’hui nous restaurobs “le dernier backup”. Nous souhaitons **ajouter la capacité de choisir un point de restauration**.
+Aujourd’hui nous restaurons “le dernier backup”. Nous souhaitons **ajouter la capacité de choisir un point de restauration**.
 
 *..Décrir ici votre procédure de restauration (votre runbook)..*  
   
