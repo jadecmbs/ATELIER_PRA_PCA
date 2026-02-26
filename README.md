@@ -271,7 +271,62 @@ Difficulté : Moyenne (~2 heures)
 ### **Atelier 2 : Choisir notre point de restauration**  
 Aujourd’hui nous restaurons “le dernier backup”. Nous souhaitons **ajouter la capacité de choisir un point de restauration**.
 
-*..Décrir ici votre procédure de restauration (votre runbook)..*  
+*1 - Lister les backups
+Dans le terminal : 
+'''kubectl -n pra run debug-backup \
+  --rm -it \
+  --image=alpine \
+  --overrides='
+{
+  "spec": {
+    "containers": [{
+      "name": "debug",
+      "image": "alpine",
+      "command": ["sh"],
+      "stdin": true,
+      "tty": true,
+      "volumeMounts": [{
+        "name": "backup",
+        "mountPath": "/backup"
+      }]
+    }],
+    "volumes": [{
+      "name": "backup",
+      "persistentVolumeClaim": {
+        "claimName": "pra-backup"
+      }
+    }]
+  }
+}'''
+puis '''ls -lh /backup'''
+
+2 - Suspendre les backups automatiques
+Pour éviter que le CronJob écrase la base pendant la restauration 
+'''kubectl -n pra patch cronjob sqlite-backup -p '{"spec":{"suspend":true}}''''
+
+3 - Stopper temporairement l'appli Flask
+On met le pod à zéro pour éviter les écritures pendant la restauration
+'''kubectl -n pra scale deployment flask --replicas=0'''
+
+4 - Restaurer le backup choisi 
+On copie le fichier de c=backup choisi vers le PVC pra-data
+Exemple : 
+'''
+# depuis le pod debug-backup vers local
+kubectl -n pra cp <pod_debug_backup>:/backup/backup-2026-02-26-14-30.db /tmp/backup.db
+# depuis local vers le pod Flask
+kubectl -n pra cp /tmp/backup.db <pod_flask>:/data/app.db'''
+
+5 - Redémarrer l'appli
+'''kubectl -n pra scale deployment flask --replicas=1'''
+
+6 - Relancer les backups automatiques
+'''kubectl -n pra patch cronjob sqlite-backup -p '{"spec":{"suspend":false}}''''
+
+7 - Vérifier que tout fonctionne 
+Tester /count ou /consultation pour voir si les données correspondent au backup choisi
+Vérifier /status pour voir que le backup restauré est bien celui attendu. *
+
   
 ---------------------------------------------------
 Evaluation
